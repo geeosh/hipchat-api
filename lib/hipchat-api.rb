@@ -67,7 +67,7 @@ module HipChat
     #
     # @see https://www.hipchat.com/docs/api/method/rooms/create  
     def rooms_create(name, owner_user_id, privacy = 'public', topic = '', guest_access = 0)
-      self.class.post(hipchat_api_url_for('rooms/create'), :query => {:auth_token => @token}, :body => {:name => name, :owner_user_id => owner_user_id, 
+      self.class.post(hipchat_api_url_for('rooms/create'), :body => {:name => name, :owner_user_id => owner_user_id, 
         :topic => topic, :privacy => privacy, :guest_access => guest_access})
     end
     
@@ -77,7 +77,7 @@ module HipChat
     #
     # @see https://www.hipchat.com/docs/api/method/rooms/delete
     def rooms_delete(room_id)
-      self.class.post(hipchat_api_url_for('rooms/delete'), :query => {:auth_token => @token}, :body => {:room_id => room_id})      
+      self.class.post(hipchat_api_url_for('rooms/delete'), :body => {:room_id => room_id})      
     end
 
     # Fetch chat history for this room. 
@@ -88,7 +88,7 @@ module HipChat
     #
     # @see https://www.hipchat.com/docs/api/method/rooms/history
     def rooms_history(room_id, date, timezone)
-      self.class.get(hipchat_api_url_for('rooms/history'), :query => {:auth_token => @token, :room_id => room_id, :date => date, 
+      self.class.get(hipchat_api_url_for('rooms/history'), :query => {:room_id => room_id, :date => date, 
         :timezone => timezone})
     end
 
@@ -96,7 +96,7 @@ module HipChat
     #   
     # @see https://www.hipchat.com/docs/api/method/rooms/list
     def rooms_list
-      self.class.get(hipchat_api_url_for('rooms/list'), :query => {:auth_token => @token})
+      self.class.get(hipchat_api_url_for('rooms/list'))
     end
     
     # Send a message to a room.
@@ -108,7 +108,7 @@ module HipChat
     # @param color [String] Background color for message. One of "yellow", "red", "green", "purple", or "random". (default: yellow) 
     # @see https://www.hipchat.com/docs/api/method/rooms/message
     def rooms_message(room_id, from, message, notify = 0, color = 'yellow')
-      self.class.post(hipchat_api_url_for('rooms/message'), :query => {:auth_token => @token}, :body => {:auth_token => @token, :room_id => room_id, :from => from, :message => message, :notify => notify, :color => color})
+      self.class.post(hipchat_api_url_for('rooms/message'), :body => {:auth_token => @token, :room_id => room_id, :from => from, :message => message, :notify => notify, :color => color})
     end
 
     # Get room details.
@@ -117,7 +117,7 @@ module HipChat
     #
     # @see https://www.hipchat.com/docs/api/method/rooms/show
     def rooms_show(room_id)
-      self.class.get(hipchat_api_url_for('rooms/show'), :query => {:auth_token => @token, :room_id => room_id})
+      self.class.get(hipchat_api_url_for('rooms/show'), :query => {:room_id => room_id})
     end
         
     # Create a new user in your group.
@@ -131,7 +131,7 @@ module HipChat
     #
     # @see https://www.hipchat.com/docs/api/method/users/create
     def users_create(email, name, title, is_group_admin = 0, password = nil, timezone = 'UTC')
-      self.class.post(hipchat_api_url_for('users/create'), :query => {:auth_token => @token}, :body => {:email => email, :name => name, :title => title, :is_group_admin => is_group_admin, :password => password, :timezone => timezone}.reject!{|key, value| value.nil?})
+      self.class.post(hipchat_api_url_for('users/create'), :body => {:email => email, :name => name, :title => title, :is_group_admin => is_group_admin, :password => password, :timezone => timezone}.reject!{|key, value| value.nil?})
     end
 
     # Delete a user. 
@@ -140,14 +140,14 @@ module HipChat
     #
     # @see https://www.hipchat.com/docs/api/method/users/delete
     def users_delete(user_id)
-      self.class.post(hipchat_api_url_for('users/delete'), :query => {:auth_token => @token}, :body => {:user_id => user_id})
+      self.class.post(hipchat_api_url_for('users/delete'), :body => {:user_id => user_id})
     end
 
     # List all users in the group. 
     #
     # @see https://www.hipchat.com/docs/api/method/users/list
     def users_list
-      self.class.get(hipchat_api_url_for('users/list'), :query => {:auth_token => @token})
+      self.class.get(hipchat_api_url_for('users/list'))
     end
 
     # Get a user's details. 
@@ -156,7 +156,7 @@ module HipChat
     #
     # @see https://www.hipchat.com/docs/api/method/users/show
     def users_show(user_id)
-      self.class.get(hipchat_api_url_for('users/show'), :query => {:auth_token => @token, :user_id => user_id})
+      self.class.get(hipchat_api_url_for('users/show'), :query => {:user_id => user_id})
     end
 
     # Update a user.
@@ -170,7 +170,7 @@ module HipChat
     #
     # @see https://www.hipchat.com/docs/api/method/users/update
     def users_update(user_id, email = nil, name = nil, title = nil, is_group_admin = nil, password = nil, timezone = nil)
-      self.class.post(hipchat_api_url_for('users/update'), :query => {:auth_token => @token}, :body => {:user_id => user_id, :email => email, 
+      self.class.post(hipchat_api_url_for('users/update'), :body => {:user_id => user_id, :email => email, 
         :name => name, :title => title, :is_group_admin => is_group_admin, :password => password, :timezone => timezone}.reject!{|key, value| value.nil?})
     end
     
@@ -182,7 +182,7 @@ module HipChat
     #
     # @return URL appropriate for accessing the HipChat API with a given API method.
     def hipchat_api_url_for(method)
-      "#{@hipchat_api_url}/#{method}"
+      "#{@hipchat_api_url}/#{method}?format=json&auth_token=#{@token}"
     end
   end
 end
